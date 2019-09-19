@@ -15,7 +15,6 @@ import android.view.Surface;
 class ImmersionDelegate implements Runnable {
 
     private ImmersionBar mImmersionBar;
-    private int mStatusBarHeight = 0;
     private BarProperties mBarProperties;
     private OnBarListener mOnBarListener;
     private int mNotchHeight;
@@ -24,7 +23,6 @@ class ImmersionDelegate implements Runnable {
         if (o instanceof Activity) {
             if (mImmersionBar == null) {
                 mImmersionBar = new ImmersionBar((Activity) o);
-                mStatusBarHeight = ImmersionBar.getStatusBarHeight((Activity) o);
             }
         } else if (o instanceof Fragment) {
             if (mImmersionBar == null) {
@@ -33,7 +31,6 @@ class ImmersionDelegate implements Runnable {
                 } else {
                     mImmersionBar = new ImmersionBar((Fragment) o);
                 }
-                mStatusBarHeight = ImmersionBar.getStatusBarHeight((Fragment) o);
             }
         } else if (o instanceof android.app.Fragment) {
             if (mImmersionBar == null) {
@@ -42,7 +39,6 @@ class ImmersionDelegate implements Runnable {
                 } else {
                     mImmersionBar = new ImmersionBar((android.app.Fragment) o);
                 }
-                mStatusBarHeight = ImmersionBar.getStatusBarHeight((android.app.Fragment) o);
             }
         }
     }
@@ -50,7 +46,6 @@ class ImmersionDelegate implements Runnable {
     ImmersionDelegate(Activity activity, Dialog dialog) {
         if (mImmersionBar == null) {
             mImmersionBar = new ImmersionBar(activity, dialog);
-            mStatusBarHeight = ImmersionBar.getStatusBarHeight(activity);
         }
     }
 
@@ -63,56 +58,25 @@ class ImmersionDelegate implements Runnable {
     }
 
     void onResume() {
-        if (mImmersionBar != null && OSUtils.isEMUI3_x()) {
-            if (mImmersionBar.initialized() && !mImmersionBar.isFragment() && mImmersionBar.getBarParams().navigationBarWithEMUI3Enable) {
-                reinitialize();
-            }
+        if (mImmersionBar != null) {
+            mImmersionBar.onResume();
         }
     }
 
     void onDestroy() {
         mBarProperties = null;
         if (mImmersionBar != null) {
-            mImmersionBar.destroy();
+            mImmersionBar.onDestroy();
             mImmersionBar = null;
         }
     }
 
     void onConfigurationChanged(Configuration newConfig) {
         if (mImmersionBar != null) {
-            if (OSUtils.isEMUI3_x() || Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-                if (mImmersionBar.initialized() && !mImmersionBar.isFragment() && mImmersionBar.getBarParams().navigationBarWithKitkatEnable) {
-                    reinitialize();
-                } else {
-                    fitsWindows();
-                }
-            } else {
-                fitsWindows();
-            }
+            mImmersionBar.onConfigurationChanged(newConfig);
             barChanged(newConfig);
         }
     }
-
-    /**
-     * 重新初始化，适配一些特殊机型
-     */
-    private void reinitialize() {
-        if (mImmersionBar != null) {
-            mImmersionBar.init();
-        }
-    }
-
-    /**
-     * 状态栏高度改变的时候重新适配布局重叠问题
-     */
-    private void fitsWindows() {
-        int statusBarHeight = ImmersionBar.getStatusBarHeight(mImmersionBar.getActivity());
-        if (mStatusBarHeight != statusBarHeight) {
-            mImmersionBar.fitsWindows();
-            mStatusBarHeight = statusBarHeight;
-        }
-    }
-
 
     /**
      * 横竖屏切换监听
@@ -147,18 +111,21 @@ class ImmersionDelegate implements Runnable {
 
     @Override
     public void run() {
-        Activity activity = mImmersionBar.getActivity();
-        BarConfig barConfig = new BarConfig(activity);
-        mBarProperties.setStatusBarHeight(barConfig.getStatusBarHeight());
-        mBarProperties.setNavigationBar(barConfig.hasNavigationBar());
-        mBarProperties.setNavigationBarHeight(barConfig.getNavigationBarHeight());
-        mBarProperties.setNavigationBarWidth(barConfig.getNavigationBarWidth());
-        boolean notchScreen = NotchUtils.hasNotchScreen(activity);
-        mBarProperties.setNotchScreen(notchScreen);
-        if (notchScreen && mNotchHeight == 0) {
-            mNotchHeight = NotchUtils.getNotchHeight(activity);
-            mBarProperties.setNotchHeight(mNotchHeight);
+        if (mImmersionBar != null && mImmersionBar.getActivity() != null) {
+            Activity activity = mImmersionBar.getActivity();
+            BarConfig barConfig = new BarConfig(activity);
+            mBarProperties.setStatusBarHeight(barConfig.getStatusBarHeight());
+            mBarProperties.setNavigationBar(barConfig.hasNavigationBar());
+            mBarProperties.setNavigationBarHeight(barConfig.getNavigationBarHeight());
+            mBarProperties.setNavigationBarWidth(barConfig.getNavigationBarWidth());
+            mBarProperties.setActionBarHeight(barConfig.getActionBarHeight());
+            boolean notchScreen = NotchUtils.hasNotchScreen(activity);
+            mBarProperties.setNotchScreen(notchScreen);
+            if (notchScreen && mNotchHeight == 0) {
+                mNotchHeight = NotchUtils.getNotchHeight(activity);
+                mBarProperties.setNotchHeight(mNotchHeight);
+            }
+            mOnBarListener.onBarChange(mBarProperties);
         }
-        mOnBarListener.onBarChange(mBarProperties);
     }
 }

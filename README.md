@@ -1,28 +1,28 @@
 ![logo](https://github.com/gyf-dev/Screenshots/blob/master/ImmersionBar/readme_head.png)
 # ImmersionBar -- android 4.4以上沉浸式实现 
-[![version](https://img.shields.io/badge/version-3.0.0--beta03-brightgreen.svg)](https://bintray.com/geyifeng/maven/immersionbar)[![author](https://img.shields.io/badge/author-gyf--dev-orange.svg)](https://github.com/gyf-dev)[![简书](https://img.shields.io/badge/%E7%AE%80%E4%B9%A6-HeLe%E5%B0%8F%E5%AD%90%E6%8B%BD-blue.svg)](https://www.jianshu.com/p/2a884e211a62)[![QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-314360549-red.svg)]()
+[![version](https://img.shields.io/badge/version-3.0.0-brightgreen.svg)](https://bintray.com/geyifeng/maven/immersionbar) [![author](https://img.shields.io/badge/author-gyf--dev-orange.svg)](https://github.com/gyf-dev) [![简书](https://img.shields.io/badge/%E7%AE%80%E4%B9%A6-HeLe%E5%B0%8F%E5%AD%90%E6%8B%BD-blue.svg)](https://www.jianshu.com/p/2a884e211a62) [![QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-314360549-red.svg)]()
 
-## 直接看效果图，最下面有各个版本的效果图
+## 直接看效果图，建议下载demo体验，最下面有各个版本的效果图
 <img width="300"  src="https://github.com/gyf-dev/Screenshots/blob/master/ImmersionBar/Screenshot_6.0.gif"/>
 
 ## 使用 
 > android studio
    ```groovy
    // 基础依赖包，必须要依赖
-   implementation 'com.gyf.immersionbar:immersionbar:3.0.0-beta03'
+   implementation 'com.gyf.immersionbar:immersionbar:3.0.0'
    // fragment快速实现（可选）
-   implementation 'com.gyf.immersionbar:immersionbar-components:3.0.0-beta03'
+   implementation 'com.gyf.immersionbar:immersionbar-components:3.0.0'
    // kotlin扩展（可选）
-   implementation 'com.gyf.immersionbar:immersionbar-ktx:3.0.0-beta03'
+   implementation 'com.gyf.immersionbar:immersionbar-ktx:3.0.0'
    ```
 ## 2.x版本使用说明
-### [点我查看2.x版本使用说明](https://github.com/gyf-dev/ImmersionBar/blob/master/README_2.x.md)
+#### [点我查看2.x版本使用说明](https://github.com/gyf-dev/ImmersionBar/blob/master/README_2.x.md)
 
 ## 版本说明
-### [点我查看版本说明](https://github.com/gyf-dev/ImmersionBar/wiki)
+#### [点我查看版本说明](https://github.com/gyf-dev/ImmersionBar/wiki)
 
 ## 下载demo 
-### [点我下载immersionBar-3.0.0beta03.apk](https://github.com/gyf-dev/ImmersionBar/blob/master/apk/immersionBar-3.0.0beta03.apk) 
+#### [点我下载immersionBar-3.0.0.apk](https://github.com/gyf-dev/ImmersionBar/blob/master/apk/immersionbar-3.0.0.apk)
 
 ## 关于使用AndroidX支持库
 - 如果你的项目中使用了AndroidX支持库，请在你的gradle.properties加入如下配置，如果已经配置了，请忽略
@@ -32,7 +32,7 @@
     ```
 
 ## 关于全面屏与刘海
-### 关于全面屏
+#### 关于全面屏
    在manifest加入如下配置，四选其一，或者都写
    
    ① 在manifest的Application节点下加入
@@ -51,7 +51,7 @@
    ```
    ④ 升级targetSdkVersion为25以上版本
    
-### 关于刘海屏 
+#### 关于刘海屏 
   在manifest的Application节点下加入，vivo和oppo没有找到相关配置信息
    ```xml
       <!--适配华为（huawei）刘海屏-->
@@ -64,8 +64,7 @@
         android:value="portrait|landscape" />
    ```
   
-## 用法
-### 初始化
+## Api详解
 - 基础用法
 
     ```java
@@ -104,21 +103,22 @@
                  .removeSupportView(toolbar)  //移除指定view支持
                  .removeSupportAllView() //移除全部view支持
                  .navigationBarEnable(true)   //是否可以修改导航栏颜色，默认为true
-                 .navigationBarWithKitkatEnable(true)  //是否可以修改安卓4.4和emui3.1手机导航栏颜色，默认为true
+                 .navigationBarWithKitkatEnable(true)  //是否可以修改安卓4.4和emui3.x手机导航栏颜色，默认为true
+                 .navigationBarWithEMUI3Enable(true) //是否可以修改emui3.x手机导航栏颜色，默认为true
                  .keyboardEnable(true)  //解决软键盘与底部输入框冲突问题，默认为false，还有一个重载方法，可以指定软键盘mode
                  .keyboardMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)  //单独指定软键盘模式
-                 .setOnKeyboardListener(new OnKeyboardListener() {    //软键盘监听回调
+                 .setOnKeyboardListener(new OnKeyboardListener() {    //软键盘监听回调，keyboardEnable为true才会回调此方法
                        @Override
                        public void onKeyboardChange(boolean isPopup, int keyboardHeight) {
                            LogUtils.e(isPopup);  //isPopup为true，软键盘弹出，为false，软键盘关闭
                        }
                   })
                  .setOnNavigationBarListener(onNavigationBarListener) //导航栏显示隐藏监听，目前只支持华为和小米手机
-                 .setOnBarListener(OnBarListener) //第一次调用和横竖屏切换都会触发，建议用来做刘海屏遮挡布局控件的问题
+                 .setOnBarListener(OnBarListener) //第一次调用和横竖屏切换都会触发，可以用来做刘海屏遮挡布局控件的问题
                  .addTag("tag")  //给以上设置的参数打标记
                  .getTag("tag")  //根据tag获得沉浸式参数
                  .reset()  //重置所以沉浸式参数
-                 .init();  //必须调用方可沉浸式
+                 .init();  //必须调用方可应用以上所配置的参数
     ```
 ## 在Activity中实现沉浸式
 
@@ -182,7 +182,13 @@
    
 <img width="300"  src="https://github.com/gyf-dev/Screenshots/blob/master/ImmersionBar/Screenshot_dialog.gif"/>
 
-## 状态栏与布局顶部重叠解决方案，六种方案任选其一
+## 在PopupWindow中实现沉浸式，具体实现参考demo
+   重点是调用以下方法，但是此方法会导致有导航栏的手机底部布局会被导航栏覆盖，还有底部输入框无法根据软键盘弹出而弹出，具体适配请参考demo。
+   ```java
+       popupWindow.setClippingEnabled(false);
+   ```
+
+## 状态栏与布局顶部重叠解决方案，六种方案根据不同需求任选其一
 - ① 使用dimen自定义状态栏高度，不建议使用，因为设备状态栏高度并不是固定的
 
     在values-v19/dimens.xml文件下
@@ -218,7 +224,7 @@
        </LinearLayout>
     ```
   
-- ② 使用系统的fitsSystemWindows属性，使用该属性不会导致输入框与软键盘冲突问题，不要再Fragment使用该属性
+- ② 使用系统的fitsSystemWindows属性，使用该属性不会导致输入框与软键盘冲突问题，不要再Fragment使用该属性，只适合纯色状态栏
 
    ```xml
        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -236,7 +242,7 @@
    ```
    - 注意：ImmersionBar一定要在设置完布局以后使用，
 
-- ③ 使用ImmersionBar的fitsSystemWindows(boolean fits)方法
+- ③ 使用ImmersionBar的fitsSystemWindows(boolean fits)方法，只适合纯色状态栏
 
     ```java
         ImmersionBar.with(this)
@@ -244,7 +250,7 @@
             .statusBarColor(R.color.colorPrimary)
             .init();
     ```
-- ④ 使用ImmersionBar的statusBarView(View view)方法
+- ④ 使用ImmersionBar的statusBarView(View view)方法，可以用来适配渐变色状态栏、侧滑返回
 
     在标题栏的上方增加View标签，高度指定为0dp
     ```xml
@@ -277,7 +283,7 @@
          //或者
          //ImmersionBar.setStatusBarView(this,view);
      ```   
-- ⑤ 使用ImmersionBar的titleBar(View view)方法，原理是设置paddingTop
+- ⑤ 使用ImmersionBar的titleBar(View view)方法，原理是设置paddingTop，可以用来适配渐变色状态栏、侧滑返回
     ```java
              ImmersionBar.with(this)
                    .titleBar(view) //可以为任意view，如果是自定义xml实现标题栏的话，标题栏根节点不能为RelativeLayout或者ConstraintLayout，以及其子类
@@ -285,7 +291,7 @@
              //或者
              //ImmersionBar.setTitleBar(this, view);
      ```
-- ⑥ 使用ImmersionBar的titleBarMarginTop(View view)方法，原理是设置marginTop
+- ⑥ 使用ImmersionBar的titleBarMarginTop(View view)方法，原理是设置marginTop，只适合纯色状态栏
     ```java
              ImmersionBar.with(this)
                    .titleBarMarginTop(view)  //可以为任意view
@@ -372,36 +378,7 @@
    ```
    
 ## 问题汇总
-#### 1）、为什么顶部图片没法沉浸？
-答：但凡当前界面使用了fitsSystemWindow相关的属性或者方法为true都没法让顶部图片沉浸，所以你就要检查你的代码了，比如：
-- ①检查你是否使用了ImmersionBar的fitsSystemWindow(true)方法；
-- ②检查你的代码中是否调用了view的setFitsSystemWindow(true)方法；
-- ③检查你的布局xml里是否使用了android:fitsSystemWindows="true"属性； 
-- ④检查你的style文件里是否使用了<item name="android:fitsSystemWindows">true</item>属性。
-      
-#### 2）、immersionbar-components和immersionbar-ktx具体是干嘛的？
-  答：①immersionbar-components：作用是加快你在Fragment里实现沉浸式。如果你的Fragment是以show/hide或者结合viewpager一起使用的，并且界面之间沉浸式不相同，而且又想在Fragment里使用沉浸式代码的话，因为受到Fragment生命周期的影响，必须要在Fragment里做一些相应的出来，这样才可以正常使用沉浸式。比如对于show/hide方式来说，你必须要在onHiddenChanged方法里做一些沉浸式处理；对于结合viewpager来说，就必须要在setUserVisibleHint方法里做一些处理，而immersionbar-components里的Fragment相关的类就已经做好了这方面的处理，所以就可以在initImmersionBar方法里快速实现不同样式的沉浸式了。
-     ②immersionbar-ktx：kotlin语言的一些扩展方法，让你在kotlin使用起来更方便，比如java里的
- ```java
- ImmersionBar.with(this).init();
- ```
-在kotlin的写法就是  
- ```kotlin
- immersionBar()
- ```
-再比如java里的
-```java
-ImmersionBar.with(this).statusBarColor(R.color.colorPrimary).init();
-```
-在kotlin的写法就是
- ```kotlin
-immersionBar {
-    statusBarColor(R.color.colorPrimary)
-}
-```
-除此之外还有一些其他静态方法的简写，具体可以参考这个类[KotlinActivity](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-simple/src/main/java/com/gyf/immersionbar/simple/activity/KotlinActivity.kt)的演示
-       
-
+#### 点我[问题汇总](https://github.com/gyf-dev/ImmersionBar/wiki/questions)
     
 
 ## 效果图 ##
